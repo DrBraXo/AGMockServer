@@ -152,6 +152,18 @@ open class AGMockServer {
         handlers.forEach { unregisterHandler($0) }
     }
     
+    /// Registers AGMURLProtocol globally so it intercepts all URLSession traffic,
+    /// including sessions created outside of `hackedSession(for:)`.
+    /// Call this in `setUp()` and balance with `disableGlobalInterception()` in `tearDown()`.
+    public func enableGlobalInterception() {
+        URLProtocol.registerClass(AGMURLProtocol.self)
+    }
+
+    /// Unregisters AGMURLProtocol from the global URLProtocol chain.
+    public func disableGlobalInterception() {
+        URLProtocol.unregisterClass(AGMURLProtocol.self)
+    }
+
     public func addInterceptor(_ interceptor: AGMInterceptor) {
         AGMURLProtocol.interceptorStorage.add(interceptor)
     }
