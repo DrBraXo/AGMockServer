@@ -164,6 +164,19 @@ open class AGMockServer {
         URLProtocol.unregisterClass(AGMURLProtocol.self)
     }
 
+    /// The URLProtocol class clients use to enable interception on a specific
+    /// `URLSessionConfiguration` (`configuration.protocolClasses`). Necessary
+    /// when `enableGlobalInterception()` isn't enough — most notably for
+    /// HTTP/3 / QUIC traffic on iOS, which bypasses the global URLProtocol
+    /// chain but honours per-configuration `protocolClasses`.
+    ///
+    /// Returning `URLProtocol.Type` instead of `AGMURLProtocol.Type` keeps
+    /// the concrete class `internal` while exposing only the public surface
+    /// callers need (URLProtocol subclass to plug into a config).
+    public static var protocolClass: URLProtocol.Type {
+        AGMURLProtocol.self
+    }
+
     public func addInterceptor(_ interceptor: AGMInterceptor) {
         AGMURLProtocol.interceptorStorage.add(interceptor)
     }
